@@ -857,7 +857,7 @@ static bufsize_t manual_scan_link_url(cmark_chunk *input, bufsize_t offset) {
         break;
       } else if (input->data[i] == '\\')
         i += 2;
-      else if (cmark_isspace(input->data[i]))
+      else if (cmark_isspace(input->data[i]) || input->data[i] == '<')
         return -1;
       else
         ++i;
