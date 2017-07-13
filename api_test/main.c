@@ -945,16 +945,19 @@ static int _timing;
           gettimeofday(&_after, NULL); \
           _timing = (_after.tv_sec - _before.tv_sec) * 1000 + (_after.tv_usec - _before.tv_usec) / 1000; \
         } while (0)
+
+#  define TIMING _timing
 #else
 #  define START_TIMING()
-#  define END_TIMING() _timing = 0
+#  define END_TIMING()
+#  define TIMING 0
 #endif
 
 static void test_pathological_regressions(test_batch_runner *runner) {
   {
     // I don't care what the output is, so long as it doesn't take too long.
     char path[] = "[a](b";
-    char *input = calloc(1, (sizeof(path) - 1) * 50000);
+    char *input = (char *)calloc(1, (sizeof(path) - 1) * 50000);
     for (int i = 0; i < 50000; ++i)
       memcpy(input + i * (sizeof(path) - 1), path, sizeof(path) - 1);
 
@@ -965,12 +968,12 @@ static void test_pathological_regressions(test_batch_runner *runner) {
     free(html);
     free(input);
 
-    OK(runner, _timing < 100, "takes less than 100ms to run");
+    OK(runner, TIMING < 100, "takes less than 100ms to run");
   }
 
   {
     char path[] = "[a](<b";
-    char *input = calloc(1, (sizeof(path) - 1) * 50000);
+    char *input = (char *)calloc(1, (sizeof(path) - 1) * 50000);
     for (int i = 0; i < 50000; ++i)
       memcpy(input + i * (sizeof(path) - 1), path, sizeof(path) - 1);
 
@@ -981,7 +984,7 @@ static void test_pathological_regressions(test_batch_runner *runner) {
     free(html);
     free(input);
 
-    OK(runner, _timing < 100, "takes less than 100ms to run");
+    OK(runner, TIMING < 100, "takes less than 100ms to run");
   }
 }
 
